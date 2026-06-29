@@ -61,10 +61,20 @@ export default function HomeSection({ lang }) {
       // 3. Reload signatures list
       loadVowSignatures();
     } catch (err) {
-      alert(lang === 'ko' ? 
-        "서약 전송에 실패했습니다. 연결을 확인하고 다시 시도하세요." : 
-        "Failed to submit signature. Please check your connection."
-      );
+      console.warn("Cloud signature failed, saving locally...", err);
+      
+      // Graceful offline fallback
+      setVowSigned(true);
+      localStorage.setItem('shalom_vow_name', vowName);
+      localStorage.setItem('shalom_vow_signed', 'true');
+      
+      // Optimistically append to display list
+      setSignedList(prev => {
+        const nameTrim = vowName.trim();
+        const exists = prev.some(s => s && s.name && s.name.toLowerCase() === nameTrim.toLowerCase());
+        if (exists) return prev;
+        return [...prev, { id: 'local_' + Date.now(), name: nameTrim, created_at: new Date().toISOString() }];
+      });
     } finally {
       setIsSubmittingSig(false);
     }

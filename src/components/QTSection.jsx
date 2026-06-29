@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BookOpen, Share2, RefreshCw, Settings, X, Database } from 'lucide-react';
-import { shareReflection, fetchReflections, getDbConfig, setDbConfig } from '../utils/sync.js';
+import { shareReflection, fetchReflections, deleteReflection, getDbConfig, setDbConfig } from '../utils/sync.js';
 
 export default function QTSection({ lang, qtDays }) {
   const [activeDayIdx, setActiveDayIdx] = useState(0);
@@ -22,6 +22,19 @@ export default function QTSection({ lang, qtDays }) {
   const [dbConfig, setDbConfigState] = useState(getDbConfig());
   const [inputUrl, setInputUrl] = useState(localStorage.getItem('shalom_supabase_url') || '');
   const [inputKey, setInputKey] = useState(localStorage.getItem('shalom_supabase_key') || '');
+  const [userName, setUserName] = useState(() => localStorage.getItem('shalom_vow_name') || '');
+  const [myPostIds, setMyPostIds] = useState(() => {
+    const saved = localStorage.getItem('shalom_my_post_ids');
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [dayPostIds, setDayPostIds] = useState(() => {
+    const saved = localStorage.getItem('shalom_day_post_ids');
+    return saved ? JSON.parse(saved) : {};
+  });
+
+  useEffect(() => {
+    localStorage.setItem('shalom_day_post_ids', JSON.stringify(dayPostIds));
+  }, [dayPostIds]);
 
   useEffect(() => {
     localStorage.setItem('shalom_qt_notes', JSON.stringify(reflections));
@@ -54,13 +67,11 @@ export default function QTSection({ lang, qtDays }) {
     }));
   };
 
-  const handleShare = async () => {
-    // Check if name is entered in cover vow first
-    const userName = localStorage.getItem('shalom_vow_name') || '';
+  const handleShare = async (type) => {
     if (!userName.trim()) {
       alert(lang === 'ko' ? 
-        "묵상을 나누려면 먼저 '홈' 탭에서 서약문 작성을 위해 이름을 입력해주세요!" : 
-        "Please enter your name in the 'Home' tab commitment form before sharing!"
+        "묵상을 나누려면 먼저 화면 상단에 이름을 입력해주세요!" : 
+        "Please enter your name at the top before sharing!"
       );
       return;
     }
@@ -70,24 +81,44 @@ export default function QTSection({ lang, qtDays }) {
     
     const currentNotes = reflections[activeDayIdx] || {};
     const dateStr = currentDay ? currentDay.date : '';
+    const existingPostId = dayPostIds[activeDayIdx] || null;
+
+    // Prepare data based on type (morning / evening)
+    const qNotes = type === 'morning' ? {
+      q1: currentNotes.q1 || '', 
+      q2: currentNotes.q2 || '', 
+      q3: currentNotes.q3 || '', 
+      q4: currentNotes.q4 || '' 
+    } : {};
+
+    const eNotes = type === 'evening' ? {
+      e1: currentNotes.e1 || '', 
+      e2: currentNotes.e2 || '', 
+      e3: currentNotes.e3 || '' 
+    } : {};
 
     try {
-      await shareReflection(
+      const createdPostId = await shareReflection(
         userName, 
         activeDayIdx, 
         dateStr, 
-        { 
-          q1: currentNotes.q1 || '', 
-          q2: currentNotes.q2 || '', 
-          q3: currentNotes.q3 || '', 
-          q4: currentNotes.q4 || '' 
-        }, 
-        { 
-          e1: currentNotes.e1 || '', 
-          e2: currentNotes.e2 || '', 
-          e3: currentNotes.e3 || '' 
-        }
+        qNotes,
+        eNotes,
+        existingPostId
       );
+      
+      // Save createdPostId to dayPostIds
+      setDayPostIds(prev => ({
+        ...prev,
+        [activeDayIdx]: createdPostId
+      }));
+
+      // Save createdPostId to local list for deletion permission
+      setMyPostIds(prev => {
+        const next = prev.includes(createdPostId) ? prev : [...prev, createdPostId];
+        localStorage.setItem('shalom_my_post_ids', JSON.stringify(next));
+        return next;
+      });
       
       setShareMessage(lang === 'ko' ? "✓ 성공적으로 공유되었습니다!" : "✓ Shared successfully!");
       // Reload feed to see our post
@@ -96,9 +127,87 @@ export default function QTSection({ lang, qtDays }) {
       // Auto clear success message after 3 seconds
       setTimeout(() => setShareMessage(''), 3000);
     } catch (err) {
-      setShareMessage(lang === 'ko' ? "⚠️ 공유 실패 (연결 상태를 확인하세요)" : "⚠️ Sharing failed. Check connection.");
+      console.warn("Cloud sharing failed, saving locally...", err);
+      setShareMessage(lang === 'ko' ? "✓ 로컬 저장됨 (오프라인 모드)" : "✓ Saved locally (Offline)");
+      
+      const localPostId = existingPostId || 'local_post_' + Date.now();
+      
+      // Find current local post to merge
+      const existingLocalPost = sharedPosts.find(p => p.id === localPostId) || {};
+      
+      // Merge notes
+      const mergedQ = { ...(existingLocalPost.q_notes || {}) };
+      if (type === 'morning') {
+        Object.assign(mergedQ, qNotes);
+      }
+      const mergedE = { ...(existingLocalPost.e_notes || {}) };
+      if (type === 'evening') {
+        Object.assign(mergedE, eNotes);
+      }
+
+      // Optimistically add to the feed list so they see it
+      const localPost = {
+        id: localPostId,
+        name: userName,
+        day_idx: activeDayIdx,
+        date_str: dateStr,
+        q_notes: mergedQ,
+        e_notes: mergedE,
+        created_at: new Date().toISOString()
+      };
+      
+      setSharedPosts(prev => {
+        const filtered = prev.filter(p => p.id !== localPostId);
+        return [localPost, ...filtered];
+      });
+      
+      setDayPostIds(prev => ({
+        ...prev,
+        [activeDayIdx]: localPostId
+      }));
+      
+      setMyPostIds(prev => {
+        const next = prev.includes(localPostId) ? prev : [...prev, localPostId];
+        localStorage.setItem('shalom_my_post_ids', JSON.stringify(next));
+        return next;
+      });
+      setTimeout(() => setShareMessage(''), 3000);
     } finally {
       setIsSharing(false);
+    }
+  };
+
+  const handleDeletePost = async (postId) => {
+    const confirmDelete = window.confirm(
+      lang === 'ko' ? "이 묵상 글을 정말 삭제하시겠습니까?" : "Are you sure you want to delete this reflection?"
+    );
+    if (!confirmDelete) return;
+
+    try {
+      // 1. Call API to delete
+      await deleteReflection(postId);
+      
+      // 2. Remove from local list
+      const nextIds = myPostIds.filter(id => id !== postId);
+      setMyPostIds(nextIds);
+      localStorage.setItem('shalom_my_post_ids', JSON.stringify(nextIds));
+
+      // 3. Remove from UI list
+      setSharedPosts(prev => prev.filter(p => p.id !== postId));
+      
+      alert(lang === 'ko' ? "삭제되었습니다." : "Deleted successfully.");
+    } catch (err) {
+      console.error("Delete failed:", err);
+      // Fallback: still delete locally if it's a local offline post
+      if (postId.startsWith('local_')) {
+        const nextIds = myPostIds.filter(id => id !== postId);
+        setMyPostIds(nextIds);
+        localStorage.setItem('shalom_my_post_ids', JSON.stringify(nextIds));
+        setSharedPosts(prev => prev.filter(p => p.id !== postId));
+        alert(lang === 'ko' ? "삭제되었습니다 (로컬)." : "Deleted successfully (Local).");
+      } else {
+        alert(lang === 'ko' ? "삭제에 실패했습니다. 다시 시도해 주세요." : "Failed to delete. Please try again.");
+      }
     }
   };
 
@@ -253,6 +362,61 @@ export default function QTSection({ lang, qtDays }) {
               </div>
             </div>
 
+            {/* Author Name Input */}
+            <div style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '10px', 
+              backgroundColor: 'var(--bg-tint)', 
+              padding: '12px 14px', 
+              borderRadius: '6px', 
+              marginBottom: '20px',
+              border: '1px dashed var(--color-border)'
+            }}>
+              <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-charcoal)', whiteSpace: 'nowrap' }}>
+                {lang === 'ko' ? '작성자 이름' : 'Your Name'}
+              </span>
+              <input 
+                type="text" 
+                value={userName} 
+                onChange={(e) => {
+                  const newName = e.target.value;
+                  setUserName(newName);
+                  localStorage.setItem('shalom_vow_name', newName);
+                }} 
+                placeholder={lang === 'ko' ? '공유용 이름을 적어주세요' : 'Enter sharing name'}
+                style={{ 
+                  flex: 1, 
+                  border: 'none', 
+                  borderBottom: '1px solid var(--color-border)', 
+                  backgroundColor: 'transparent', 
+                  fontSize: '13.5px',
+                  fontWeight: 500,
+                  color: 'var(--color-charcoal)',
+                  outline: 'none',
+                  padding: '2px 4px'
+                }}
+              />
+            </div>
+
+            {/* Success/Error Feedback Banner */}
+            {shareMessage && (
+              <div style={{ 
+                textAlign: 'center', 
+                backgroundColor: 'var(--bg-tint)', 
+                color: 'var(--color-crimson)', 
+                padding: '8px 12px', 
+                borderRadius: '6px', 
+                fontSize: '13.5px', 
+                fontWeight: 600, 
+                marginBottom: '20px',
+                border: '1px solid var(--color-border)',
+                animation: 'pulse 2s infinite'
+              }}>
+                {shareMessage}
+              </div>
+            )}
+
             {/* Morning Reflections Form */}
             <div style={{ marginBottom: '24px' }}>
               <h4 style={{ 
@@ -287,6 +451,35 @@ export default function QTSection({ lang, qtDays }) {
                   );
                 })}
               </div>
+
+              {/* Morning Share Button */}
+              <div style={{ display: 'flex', justifyContent: 'center', marginTop: '16px' }}>
+                <button
+                  onClick={() => handleShare('morning')}
+                  disabled={isSharing}
+                  className="action-btn-primary"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    backgroundColor: 'var(--color-crimson)',
+                    color: '#ffffff',
+                    border: 'none',
+                    borderRadius: '20px',
+                    padding: '8px 20px',
+                    fontWeight: 600,
+                    fontSize: '13px',
+                    cursor: 'pointer',
+                    justifyContent: 'center',
+                    width: '100%',
+                    maxWidth: '260px',
+                    opacity: isSharing ? 0.7 : 1
+                  }}
+                >
+                  <Share2 size={13} />
+                  {lang === 'ko' ? "아침 묵상 공유하기" : "Share Morning Q.T"}
+                </button>
+              </div>
             </div>
 
             {/* Evening Reflections Form */}
@@ -320,50 +513,36 @@ export default function QTSection({ lang, qtDays }) {
                   </div>
                 ))}
               </div>
-            </div>
 
-            {/* Action Bar for Sharing */}
-            <div style={{ 
-              display: 'flex', 
-              flexDirection: 'column',
-              alignItems: 'center', 
-              gap: '8px', 
-              borderTop: '1px solid var(--color-border)', 
-              paddingTop: '20px', 
-              marginTop: '10px' 
-            }}>
-              <button 
-                onClick={handleShare}
-                disabled={isSharing}
-                className="action-btn-primary"
-                style={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: '8px', 
-                  backgroundColor: 'var(--color-crimson)',
-                  color: '#ffffff',
-                  border: 'none',
-                  borderRadius: '24px',
-                  padding: '10px 24px',
-                  fontWeight: 600,
-                  fontSize: '14px',
-                  cursor: 'pointer',
-                  width: '100%',
-                  maxWidth: '280px',
-                  justifyContent: 'center'
-                }}
-              >
-                <Share2 size={16} />
-                {lang === 'ko' ? "오늘의 묵상 제출하기 (공유)" : "Submit Reflections (Share)"}
-              </button>
-              
-              {shareMessage && (
-                <div style={{ fontSize: '13px', color: 'var(--color-crimson)', fontWeight: 600, marginTop: '4px' }}>
-                  {shareMessage}
-                </div>
-              )}
+              {/* Evening Share Button */}
+              <div style={{ display: 'flex', justifyContent: 'center', marginTop: '16px' }}>
+                <button
+                  onClick={() => handleShare('evening')}
+                  disabled={isSharing}
+                  className="action-btn-primary"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    backgroundColor: 'var(--color-green-dark)',
+                    color: '#ffffff',
+                    border: 'none',
+                    borderRadius: '20px',
+                    padding: '8px 20px',
+                    fontWeight: 600,
+                    fontSize: '13px',
+                    cursor: 'pointer',
+                    justifyContent: 'center',
+                    width: '100%',
+                    maxWidth: '260px',
+                    opacity: isSharing ? 0.7 : 1
+                  }}
+                >
+                  <Share2 size={13} />
+                  {lang === 'ko' ? "하루를 마치며 공유하기" : "Share Evening Reflections"}
+                </button>
+              </div>
             </div>
-
           </div>
         ) : (
           <p style={{ textAlign: 'center', color: 'var(--color-muted)', padding: '20px 0' }}>
@@ -443,9 +622,31 @@ export default function QTSection({ lang, qtDays }) {
                     <span style={{ fontWeight: 700, color: 'var(--color-crimson-light)', fontSize: '13.5px' }}>
                       {post.name}
                     </span>
-                    <span style={{ fontSize: '11px', color: 'var(--color-muted)' }}>
-                      {relativeTime}
-                    </span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ fontSize: '11px', color: 'var(--color-muted)' }}>
+                        {relativeTime}
+                      </span>
+                      {myPostIds.includes(post.id) && (
+                        <button
+                          onClick={() => handleDeletePost(post.id)}
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            color: 'var(--color-crimson)',
+                            cursor: 'pointer',
+                            padding: '2px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            opacity: 0.8
+                          }}
+                          title={lang === 'ko' ? "삭제" : "Delete"}
+                        >
+                          <span style={{ fontSize: '11px', fontWeight: 600, textDecoration: 'underline' }}>
+                            {lang === 'ko' ? '삭제' : 'Delete'}
+                          </span>
+                        </button>
+                      )}
+                    </div>
                   </div>
 
                   {/* Morning content */}

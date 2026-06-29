@@ -732,3 +732,24 @@ button, input, textarea {
   width: 20px;
   height: 20px;
 }
+
+/* Worship Section Responsive Grid */
+.worship-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+@media (max-width: 480px) {
+  .worship-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+}
+
+@media (max-width: 320px) {
+  .worship-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+  }
+}

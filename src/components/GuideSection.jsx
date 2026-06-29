@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Search, ChevronDown, ChevronUp, Map, Sun, Info, Volume2 } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Search, ChevronDown, ChevronUp, Map, Sun, Info, Volume2, RefreshCw } from 'lucide-react';
 import { handbookContent } from '../data/content.js';
 
 export default function GuideSection({ lang }) {
@@ -7,18 +7,119 @@ export default function GuideSection({ lang }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [openCategory, setOpenCategory] = useState('greetings');
   const [hotelLevel, setHotelLevel] = useState('1F');
+  
+  // Real-time weather state
+  const [realtimeWeather, setRealtimeWeather] = useState(null);
+  const [isWeatherLoading, setIsWeatherLoading] = useState(false);
 
-  // Text-To-Speech (TTS) voice trigger for Spanish
+  useEffect(() => {
+    fetchRealtimeWeather();
+  }, []);
+
+  const fetchRealtimeWeather = async () => {
+    setIsWeatherLoading(true);
+    try {
+      // Guatemala City coordinates: 14.6349° N, 90.5069° W, Date range: 2026-06-30 to 2026-07-06
+      const res = await fetch("https://api.open-meteo.com/v1/forecast?latitude=14.6349&longitude=-90.5069&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=America/Guatemala&start_date=2026-06-30&end_date=2026-07-06");
+      if (!res.ok) throw new Error("Weather fetch failed");
+      const data = await res.json();
+      
+      const parsedDays = data.daily.time.map((timeStr, idx) => {
+        // Parse "YYYY-MM-DD" manually to prevent UTC timezone shift on mobile devices
+        const parts = timeStr.split('-');
+        const year = parseInt(parts[0], 10);
+        const month = parseInt(parts[1], 10);
+        const dateVal = parseInt(parts[2], 10);
+        
+        const dateObj = new Date(year, month - 1, dateVal);
+        const dayNamesKo = ['일', '월', '화', '수', '목', '금', '토'];
+        const dayNamesEn = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        const dayName = lang === 'ko' ? dayNamesKo[dateObj.getDay()] : dayNamesEn[dateObj.getDay()];
+        
+        const wCode = data.daily.weathercode[idx];
+        const tempMax = Math.round(data.daily.temperature_2m_max[idx]);
+        const tempMin = Math.round(data.daily.temperature_2m_min[idx]);
+        
+        // Translate WMO weather codes to user-friendly descriptions and emojis
+        let status = '';
+        let emoji = '☀️';
+        
+        if (wCode === 0) {
+          status = lang === 'ko' ? '맑음' : 'Clear';
+          emoji = '☀️';
+        } else if ([1, 2, 3].includes(wCode)) {
+          status = lang === 'ko' ? '구름 조금' : 'Partly Cloudy';
+          emoji = '⛅';
+        } else if ([45, 48].includes(wCode)) {
+          status = lang === 'ko' ? '안개' : 'Foggy';
+          emoji = '🌫️';
+        } else if ([51, 53, 55].includes(wCode)) {
+          status = lang === 'ko' ? '이슬비' : 'Drizzle';
+          emoji = '🌧️';
+        } else if ([61, 63, 65].includes(wCode)) {
+          status = lang === 'ko' ? '비 내림' : 'Rainy';
+          emoji = '🌧️';
+        } else if ([80, 81, 82].includes(wCode)) {
+          status = lang === 'ko' ? '소나기' : 'Showers';
+          emoji = '🌦️';
+        } else if ([95, 96, 99].includes(wCode)) {
+          status = lang === 'ko' ? '뇌우 (비)' : 'Thunderstorms';
+          emoji = '⛈️';
+        } else {
+          status = lang === 'ko' ? '흐림' : 'Cloudy';
+          emoji = '☁️';
+        }
+        
+        return {
+          date: `${month}/${dateVal} (${dayName})`,
+          status: `${emoji} ${status}`,
+          temp: `${tempMin}° / ${tempMax}°`
+        };
+      });
+      
+      setRealtimeWeather(parsedDays);
+    } catch (err) {
+      console.warn("Could not fetch real-time weather, using static averages.", err);
+    } finally {
+      setIsWeatherLoading(false);
+    }
+  };
+
+  const getApiBase = () => {
+    if (typeof window !== 'undefined') {
+      const hn = window.location.hostname;
+      if (hn === 'localhost' || hn === '127.0.0.1') {
+        return 'https://gmc-shalom.vercel.app';
+      }
+    }
+    return '';
+  };
+
+  // Text-To-Speech (TTS) voice trigger for Spanish via Vercel Proxy
   const speakSpanish = (text) => {
+    const cleanText = text.replace(/¡|!|¿|\?/g, '').trim();
+    
+    try {
+      const urlText = encodeURIComponent(cleanText);
+      const apiBase = getApiBase();
+      const ttsUrl = `${apiBase}/api/tts?text=${urlText}`;
+      const audio = new Audio(ttsUrl);
+      audio.play().catch((e) => {
+        console.warn("Proxy TTS play failed, falling back to Web Speech API...", e);
+        playFallbackSpeech(cleanText);
+      });
+    } catch (err) {
+      console.warn("Proxy TTS initiation failed, falling back...", err);
+      playFallbackSpeech(cleanText);
+    }
+  };
+
+  const playFallbackSpeech = (cleanText) => {
     if ('speechSynthesis' in window) {
-      // Cancel any current utterance to prevent queue delays on multiple clicks
       window.speechSynthesis.cancel();
-      
-      const cleanText = text.replace(/¡|!|¿|\?/g, ''); // strip punctuation for smoother voice
       const utterance = new SpeechSynthesisUtterance(cleanText);
-      utterance.lang = 'es-MX'; // Latin American Spanish voice (Guatemala context)
+      utterance.lang = 'es-MX'; // Latin American Spanish (Guatemala context)
       utterance.rate = 0.85;    // slightly slower pace for clear learning
-      
       window.speechSynthesis.speak(utterance);
     } else {
       console.warn("Speech Synthesis is not supported in this browser.");
@@ -145,13 +246,51 @@ export default function GuideSection({ lang }) {
 
       {/* 2. Weather Card */}
       <div className="card">
-        <div className="card-header-line">
-          <h2 className="card-title">{content.weather.title}</h2>
-          <span className="card-subtitle">{content.weather.subtitle}</span>
+        <div className="card-header-line" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <h2 className="card-title">{content.weather.title}</h2>
+            <span className="card-subtitle">{content.weather.subtitle}</span>
+          </div>
+          <button
+            onClick={fetchRealtimeWeather}
+            disabled={isWeatherLoading}
+            style={{
+              border: 'none',
+              background: 'none',
+              cursor: 'pointer',
+              color: 'var(--color-charcoal)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '6px',
+              borderRadius: '50%',
+              backgroundColor: 'var(--bg-tint)',
+              transition: 'var(--transition)'
+            }}
+            title="Refresh Live Weather"
+          >
+            <RefreshCw size={14} className={isWeatherLoading ? 'spin' : ''} />
+          </button>
         </div>
-        <p style={{ margin: '0 0 16px', fontSize: '13px', color: 'var(--color-muted)', lineHeight: '1.65' }}>
+        <p style={{ margin: '0 0 10px', fontSize: '13px', color: 'var(--color-muted)', lineHeight: '1.65' }}>
           {content.weather.intro}
         </p>
+
+        <div style={{ fontSize: '11px', color: 'var(--color-muted)', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <span style={{ 
+            display: 'inline-block', 
+            width: '6px', 
+            height: '6px', 
+            borderRadius: '50%', 
+            backgroundColor: realtimeWeather ? '#8FA07B' : 'var(--color-gold)' 
+          }}></span>
+          <span>
+            {realtimeWeather ? 
+              (lang === 'ko' ? "실시간 과테말라시티 기상 예보" : "Guatemala City Live Forecast") : 
+              (lang === 'ko' ? "평년 기준 날씨 (인터넷 미연결 시)" : "Rainy-season averages (No Internet)")
+            }
+          </span>
+        </div>
 
         <div className="table-responsive">
           <table className="handbook-content" style={{ width: '100%', fontSize: '12.5px' }}>
@@ -163,7 +302,7 @@ export default function GuideSection({ lang }) {
               </tr>
             </thead>
             <tbody>
-              {content.weather.days.map((day, idx) => (
+              {(realtimeWeather || content.weather.days).map((day, idx) => (
                 <tr key={idx}>
                   <td style={{ fontWeight: 600, backgroundColor: 'var(--bg-tint)', whiteSpace: 'nowrap' }}>{day.date}</td>
                   <td>{day.status}</td>
