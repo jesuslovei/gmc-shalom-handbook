@@ -371,7 +371,8 @@ export default function QTSection({ lang, qtDays }) {
               padding: '12px 14px', 
               borderRadius: '6px', 
               marginBottom: '20px',
-              border: '1px dashed var(--color-border)'
+              border: '1px dashed var(--color-border)',
+              overflow: 'hidden'
             }}>
               <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--color-crimson)', whiteSpace: 'nowrap' }}>
                 {lang === 'ko' ? '작성자 이름' : 'Your Name'}
@@ -389,6 +390,7 @@ export default function QTSection({ lang, qtDays }) {
                 style={{ 
                   flex: 1, 
                   border: 'none',
+                  borderBottom: '1px solid var(--color-border)',
                   backgroundColor: 'transparent', 
                   fontSize: '13.5px',
                   fontWeight: 500,
