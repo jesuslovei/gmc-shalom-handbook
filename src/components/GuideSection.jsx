@@ -171,6 +171,19 @@ export default function GuideSection({ lang }) {
         { es: "¡Hagámoslo juntos!", pron_ko: "아가모슬로 훈또스", pron_en: "ah-GA-mos-lo HOON-tos", ko: "함께해요!", en: "Let's do it together!" },
         { es: "¡Muy bien!", pron_ko: "무이 비엔", pron_en: "mooy bee-EN", ko: "참 잘했어요!", en: "Very good!" }
       ]
+    },
+    {
+      category: "restaurant",
+      catLabel: lang === 'ko' ? "식당 필수 회화" : "At the Restaurant",
+      items: [
+        { es: "¿Me trae el menú, por favor?", pron_ko: "메 트라에 엘 메누, 뽀르 파보르", pron_en: "meh TRAH-eh el meh-NOO, por fah-VOR", ko: "메뉴판 좀 보여주세요", en: "Please show me the menu." },
+        { es: "Una botella de agua, por favor.", pron_ko: "우나 보떼야 데 아구아, 뽀르 파보르", pron_en: "OO-nah boh-TEH-yah deh AH-gwah, por fah-VOR", ko: "물 한 병 주세요", en: "A bottle of water, please." },
+        { es: "¿Qué me recomienda?", pron_ko: "께 메 레꼬미엔다?", pron_en: "keh meh reh-coh-MYEN-dah?", ko: "무엇을 추천하시나요?", en: "What do you recommend?" },
+        { es: "Sin cilantro, por favor.", pron_ko: "신 실란뜨로, 뽀르 파보르", pron_en: "seen see-LAN-troh, por fah-VOR", ko: "고수는 빼주세요", en: "No cilantro, please." },
+        { es: "No picante, por favor.", pron_ko: "노 삐깐떼, 뽀르 파보르", pron_en: "noh pee-KAHN-teh, por fah-VOR", ko: "맵지 않게 해주세요", en: "Not spicy, please." },
+        { es: "¡Está muy rico!", pron_ko: "에스따 무이 리꼬!", pron_en: "es-TAH mooy REE-coh!", ko: "정말 맛있어요!", en: "It is delicious!" },
+        { es: "La cuenta, por favor.", pron_ko: "라 꾸엔따, 뽀르 파보르", pron_en: "lah KWEN-tah, por fah-VOR", ko: "계산서 주세요", en: "The bill, please." }
+      ]
     }
   ];
 
