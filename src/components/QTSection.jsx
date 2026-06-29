@@ -388,8 +388,7 @@ export default function QTSection({ lang, qtDays }) {
                 placeholder={lang === 'ko' ? '공유용 이름을 적어주세요' : 'Enter sharing name'}
                 style={{ 
                   flex: 1, 
-                  border: 'none', 
-                  borderBottom: '1px solid var(--color-border)', 
+                  border: 'none',
                   backgroundColor: 'transparent', 
                   fontSize: '13.5px',
                   fontWeight: 500,
