@@ -522,17 +522,22 @@ export default function GuideSection({ lang }) {
               </h4>
               
               <div style={{ borderLeft: '3px solid var(--color-gold)', paddingLeft: '10px', marginTop: '14px', fontSize: '12.5px', color: 'var(--color-charcoal)', lineHeight: '1.5' }}>
-                <strong>Juan 3:16</strong><br />
-                {lang === 'ko' ? (
-                  <>
-                    "Porque de tal manera amó Dios al mundo, que ha dado a su Hijo unigénito, para que todo aquel que en él cree, no se pierda, mas tenga vida eterna."<br />
-                    <span style={{ color: 'var(--color-muted)', fontSize: '12px' }}>(하나님이 세상을 이처럼 사랑하사 독생자를 주셨으니 이는 그를 믿는 자마다 멸망하지 않고 영생을 얻게 하려 하심이라.)</span>
-                  </>
-                ) : (
-                  <>
-                    "For God so loved the world that He gave His one and only Son, that whoever believes in Him shall not perish but have eternal life."
-                  </>
-                )}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
+                  <strong>Juan 3:16</strong>
+                  <button 
+                    onClick={() => speakSpanish("Porque de tal manera amó Dios al mundo, que ha dado a su Hijo unigénito, para que todo aquel que en él cree, no se pierda, mas tenga vida eterna.")}
+                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '20px', height: '20px', borderRadius: '50%', border: 'none', backgroundColor: '#ffffff', color: 'var(--color-crimson)', cursor: 'pointer', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}
+                    title="Listen"
+                  >
+                    <Volume2 size={11} />
+                  </button>
+                </div>
+                <div style={{ fontWeight: 600, color: 'var(--color-charcoal)' }}>
+                  "Porque de tal manera amó Dios al mundo, que ha dado a su Hijo unigénito, para que todo aquel que en él cree, no se pierda, mas tenga vida eterna."
+                </div>
+                <div style={{ color: 'var(--color-muted)', fontSize: '12px', marginTop: '3px' }}>
+                  {lang === 'ko' ? "(하나님이 세상을 이처럼 사랑하사 독생자를 주셨으니 이는 그를 믿는 자마다 멸망하지 않고 영생을 얻게 하려 하심이라.)" : "(For God so loved the world that He gave His one and only Son, that whoever believes in Him shall not perish but have eternal life.)"}
+                </div>
               </div>
             </div>
           )}
@@ -557,18 +562,44 @@ export default function GuideSection({ lang }) {
                 {lang === 'ko' ? "사람은 죄에 빠져 하나님으로부터 분리되어 있습니다. 그러므로 하나님의 사랑과 계획을 알 수 없고 또 그것을 체험할 수 없습니다." : "Man is sinful and separated from God. Therefore, he cannot know and experience God's love and plan for his life."}
               </h4>
               
-              <div style={{ borderLeft: '3px solid var(--color-gold)', paddingLeft: '10px', marginTop: '14px', fontSize: '12.5px', color: 'var(--color-charcoal)', lineHeight: '1.5' }}>
-                <strong>Romanos 3:23 & 6:23</strong><br />
-                {lang === 'ko' ? (
-                  <>
-                    "Por cuanto todos pecaron, y están destituidos de la gloria de Dios... Porque la paga del pecado es muerte..."<br />
-                    <span style={{ color: 'var(--color-muted)', fontSize: '12px' }}>(모든 사람이 죄를 범하였으매 하나님의 영광에 이르지 못하더니... 죄의 삯은 사망이요...)</span>
-                  </>
-                ) : (
-                  <>
-                    "For all have sinned and fall short of the glory of God... For the wages of sin is death..."
-                  </>
-                )}
+              <div style={{ borderLeft: '3px solid var(--color-gold)', paddingLeft: '10px', marginTop: '14px', fontSize: '12.5px', color: 'var(--color-charcoal)', lineHeight: '1.5', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
+                    <strong>Romanos 3:23</strong>
+                    <button 
+                      onClick={() => speakSpanish("Por cuanto todos pecaron, y están destituidos de la gloria de Dios.")}
+                      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '20px', height: '20px', borderRadius: '50%', border: 'none', backgroundColor: '#ffffff', color: 'var(--color-crimson)', cursor: 'pointer', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}
+                      title="Listen"
+                    >
+                      <Volume2 size={11} />
+                    </button>
+                  </div>
+                  <div style={{ fontWeight: 600, color: 'var(--color-charcoal)' }}>
+                    "Por cuanto todos pecaron, y están destituidos de la gloria de Dios."
+                  </div>
+                  <div style={{ color: 'var(--color-muted)', fontSize: '12px', marginTop: '2px' }}>
+                    {lang === 'ko' ? "(모든 사람이 죄를 범하였으매 하나님의 영광에 이르지 못하더니)" : "(For all have sinned and fall short of the glory of God.)"}
+                  </div>
+                </div>
+
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
+                    <strong>Romanos 6:23</strong>
+                    <button 
+                      onClick={() => speakSpanish("Porque la paga del pecado es muerte, mas la dádiva de Dios es vida eterna en Cristo Jesús Señor nuestro.")}
+                      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '20px', height: '20px', borderRadius: '50%', border: 'none', backgroundColor: '#ffffff', color: 'var(--color-crimson)', cursor: 'pointer', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}
+                      title="Listen"
+                    >
+                      <Volume2 size={11} />
+                    </button>
+                  </div>
+                  <div style={{ fontWeight: 600, color: 'var(--color-charcoal)' }}>
+                    "Porque la paga del pecado es muerte, mas la dádiva de Dios es vida eterna en Cristo Jesús Señor nuestro."
+                  </div>
+                  <div style={{ color: 'var(--color-muted)', fontSize: '12px', marginTop: '2px' }}>
+                    {lang === 'ko' ? "(죄의 삯은 사망이요 하나님의 은사는 그리스도 예수 우리 주 안에 있는 영생이니라.)" : "(For the wages of sin is death, but the gift of God is eternal life in Christ Jesus our Lord.)"}
+                  </div>
+                </div>
               </div>
             </div>
           )}
@@ -593,18 +624,44 @@ export default function GuideSection({ lang }) {
                 {lang === 'ko' ? "예수 그리스도는 사람의 죄를 해결하기 위한 하나님의 유일한 길입니다. 그를 통해 당신은 하나님의 사랑과 계획을 알고 체험하게 됩니다." : "Jesus Christ is God's only provision for man's sin. Through Him you can know and experience God's love and plan for your life."}
               </h4>
               
-              <div style={{ borderLeft: '3px solid var(--color-gold)', paddingLeft: '10px', marginTop: '14px', fontSize: '12.5px', color: 'var(--color-charcoal)', lineHeight: '1.5' }}>
-                <strong>Juan 14:6</strong><br />
-                {lang === 'ko' ? (
-                  <>
-                    "Jesús le dijo: Yo soy el camino, y la verdad, y la vida; nadie viene al Padre, sino por mí."<br />
-                    <span style={{ color: 'var(--color-muted)', fontSize: '12px' }}>(예수께서 이르시되 내가 곧 길이요 진리요 생명이니 나로 말미암지 않고는 아버지께로 올 자가 없느니라.)</span>
-                  </>
-                ) : (
-                  <>
-                    "Jesus answered, 'I am the way and the truth and the life. No one comes to the Father except through me.'"
-                  </>
-                )}
+              <div style={{ borderLeft: '3px solid var(--color-gold)', paddingLeft: '10px', marginTop: '14px', fontSize: '12.5px', color: 'var(--color-charcoal)', lineHeight: '1.5', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
+                    <strong>Romanos 5:8</strong>
+                    <button 
+                      onClick={() => speakSpanish("Mas Dios muestra su amor para con nosotros, en que siendo aún pecadores, Cristo murió por nosotros.")}
+                      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '20px', height: '20px', borderRadius: '50%', border: 'none', backgroundColor: '#ffffff', color: 'var(--color-crimson)', cursor: 'pointer', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}
+                      title="Listen"
+                    >
+                      <Volume2 size={11} />
+                    </button>
+                  </div>
+                  <div style={{ fontWeight: 600, color: 'var(--color-charcoal)' }}>
+                    "Mas Dios muestra su amor para con nosotros, en que siendo aún pecadores, Cristo murió por nosotros."
+                  </div>
+                  <div style={{ color: 'var(--color-muted)', fontSize: '12px', marginTop: '2px' }}>
+                    {lang === 'ko' ? "(우리가 아직 죄인 되었을 때에 그리스도께서 우리를 위하여 죽으심으로 하나님께서 우리에 대한 자기의 사랑을 확증하셨느니라.)" : "(But God demonstrates His own love for us in this: While we were still sinners, Christ died for us.)"}
+                  </div>
+                </div>
+
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
+                    <strong>Juan 14:6</strong>
+                    <button 
+                      onClick={() => speakSpanish("Jesús le dijo: Yo soy el camino, y la verdad, y la vida; nadie viene al Padre, sino por mí.")}
+                      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '20px', height: '20px', borderRadius: '50%', border: 'none', backgroundColor: '#ffffff', color: 'var(--color-crimson)', cursor: 'pointer', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}
+                      title="Listen"
+                    >
+                      <Volume2 size={11} />
+                    </button>
+                  </div>
+                  <div style={{ fontWeight: 600, color: 'var(--color-charcoal)' }}>
+                    "Jesús le dijo: Yo soy el camino, y la verdad, y la vida; nadie viene al Padre, sino por mí."
+                  </div>
+                  <div style={{ color: 'var(--color-muted)', fontSize: '12px', marginTop: '2px' }}>
+                    {lang === 'ko' ? "(예수께서 이르시되 내가 곧 길이요 진리요 생명이니 나로 말미암지 않고는 아버지께로 올 자가 없느니라.)" : "(Jesus answered, 'I am the way and the truth and the life. No one comes to the Father except through me.')"}
+                  </div>
+                </div>
               </div>
             </div>
           )}
@@ -630,17 +687,22 @@ export default function GuideSection({ lang }) {
               </h4>
               
               <div style={{ borderLeft: '3px solid var(--color-gold)', paddingLeft: '10px', marginTop: '14px', fontSize: '12.5px', color: 'var(--color-charcoal)', lineHeight: '1.5' }}>
-                <strong>Apocalipsis 3:20</strong><br />
-                {lang === 'ko' ? (
-                  <>
-                    "He aquí, yo estoy a la puerta y llamo; si alguno oye mi voz y abre la puerta, entraré a él..."<br />
-                    <span style={{ color: 'var(--color-muted)', fontSize: '12px' }}>(볼지어다 내가 문 밖에 서서 두드리노니 누구든지 내 음성을 듣고 문을 열면 내가 그에게로 들어가 그와 더불어 먹으리라.)</span>
-                  </>
-                ) : (
-                  <>
-                    "Here I am! I stand at the door and knock. If anyone hears my voice and opens the door, I will come in and eat with him, and he with me."
-                  </>
-                )}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
+                  <strong>Apocalipsis 3:20</strong>
+                  <button 
+                    onClick={() => speakSpanish("He aquí, yo estoy a la puerta y llamo; si alguno oye mi voz y abre la puerta, entraré a él, y cenaré con él, y él conmigo.")}
+                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '20px', height: '20px', borderRadius: '50%', border: 'none', backgroundColor: '#ffffff', color: 'var(--color-crimson)', cursor: 'pointer', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}
+                    title="Listen"
+                  >
+                    <Volume2 size={11} />
+                  </button>
+                </div>
+                <div style={{ fontWeight: 600, color: 'var(--color-charcoal)' }}>
+                  "He aquí, yo estoy a la puerta y llamo; si alguno oye mi voz y abre la puerta, entraré a él, y cenaré con él, y él conmigo."
+                </div>
+                <div style={{ color: 'var(--color-muted)', fontSize: '12px', marginTop: '2px' }}>
+                  {lang === 'ko' ? "(볼지어다 내가 문 밖에 서서 두드리노니 누구든지 내 음성을 듣고 문을 열면 내가 그에게로 들어가 그와 더불어 먹으리라.)" : "(Here I am! I stand at the door and knock. If anyone hears my voice and opens the door, I will come in and eat with him, and he with me.)"}
+                </div>
               </div>
             </div>
           )}
