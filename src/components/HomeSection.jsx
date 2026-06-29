@@ -250,7 +250,15 @@ export default function HomeSection({ lang }) {
             {content.vow.pledge}
           </p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'center' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', width: '100%', maxWidth: '300px' }}>
+            <div style={{ 
+              display: 'flex', 
+              flexWrap: 'wrap',
+              justifyContent: 'center',
+              alignItems: 'center', 
+              gap: '10px 14px', 
+              width: '100%', 
+              maxWidth: '300px' 
+            }}>
               <span style={{ fontSize: '13px', color: 'var(--color-muted)', whiteSpace: 'nowrap' }}>
                 {lang === 'ko' ? '이름' : 'Name'}
               </span>
@@ -261,7 +269,7 @@ export default function HomeSection({ lang }) {
                 placeholder={lang === 'ko' ? '이름 입력' : 'Enter name'}
                 disabled={vowSigned}
                 style={{ 
-                  flex: 1, 
+                  flex: '1 1 160px', 
                   border: 'none', 
                   borderBottom: '1px solid var(--color-charcoal)', 
                   backgroundColor: 'transparent', 
@@ -269,7 +277,8 @@ export default function HomeSection({ lang }) {
                   textAlign: 'center',
                   fontSize: '15px',
                   outline: 'none',
-                  fontWeight: 500
+                  fontWeight: 500,
+                  minWidth: '120px'
                 }}
               />
               <span style={{ fontSize: '13px', color: 'var(--color-muted)', whiteSpace: 'nowrap' }}>
