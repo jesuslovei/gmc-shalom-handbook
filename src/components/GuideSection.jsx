@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Search, ChevronDown, ChevronUp, Map, Sun, Info, Volume2, RefreshCw } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Search, ChevronDown, ChevronUp, Map, Sun, Info, Volume2, RefreshCw, X, ZoomIn, ZoomOut, Maximize2 } from 'lucide-react';
 import { handbookContent } from '../data/content.js';
 
 export default function GuideSection({ lang }) {
@@ -8,7 +8,193 @@ export default function GuideSection({ lang }) {
   const [openCategory, setOpenCategory] = useState('greetings');
   const [hotelLevel, setHotelLevel] = useState('1F');
   const [activeLawTab, setActiveLawTab] = useState(0);
+
+  // Map Zoom Modal States
+  const [isMapModalOpen, setIsMapModalOpen] = useState(false);
+  const [modalScale, setModalScale] = useState(1);
+  const [modalTranslate, setModalTranslate] = useState({ x: 0, y: 0 });
   
+  const modalTouchRef = useRef({
+    lastDist: 0,
+    lastMidX: 0,
+    lastMidY: 0,
+    startScale: 1,
+    startTx: 0,
+    startTy: 0,
+    lastTap: 0,
+    isDragging: false,
+    startX: 0,
+    startY: 0
+  });
+  
+  const modalContainerRef = useRef(null);
+
+  const getDistance = (t1, t2) => {
+    const dx = t1.clientX - t2.clientX;
+    const dy = t1.clientY - t2.clientY;
+    return Math.sqrt(dx * dx + dy * dy);
+  };
+
+  const handleModalTouchStart = (e) => {
+    const ref = modalTouchRef.current;
+    if (e.touches.length === 1) {
+      const touch = e.touches[0];
+      ref.isDragging = true;
+      ref.startX = touch.clientX - modalTranslate.x;
+      ref.startY = touch.clientY - modalTranslate.y;
+      
+      const now = Date.now();
+      if (now - ref.lastTap < 300) {
+        if (modalScale > 1) {
+          setModalScale(1);
+          setModalTranslate({ x: 0, y: 0 });
+        } else {
+          setModalScale(2.5);
+          const rect = modalContainerRef.current?.getBoundingClientRect();
+          if (rect) {
+            const originX = touch.clientX - rect.left - rect.width / 2;
+            const originY = touch.clientY - rect.top - rect.height / 2;
+            setModalTranslate({
+              x: -originX * 1.5,
+              y: -originY * 1.5
+            });
+          }
+        }
+        ref.lastTap = 0;
+      } else {
+        ref.lastTap = now;
+      }
+    } else if (e.touches.length === 2) {
+      e.preventDefault();
+      ref.isDragging = false;
+      const dist = getDistance(e.touches[0], e.touches[1]);
+      const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+      const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+      
+      ref.lastDist = dist;
+      ref.lastMidX = midX;
+      ref.lastMidY = midY;
+      ref.startScale = modalScale;
+      ref.startTx = modalTranslate.x;
+      ref.startTy = modalTranslate.y;
+    }
+  };
+
+  const handleModalTouchMove = (e) => {
+    const ref = modalTouchRef.current;
+    if (e.touches.length === 1 && ref.isDragging && modalScale > 1) {
+      e.preventDefault();
+      const touch = e.touches[0];
+      let newX = touch.clientX - ref.startX;
+      let newY = touch.clientY - ref.startY;
+
+      const rect = modalContainerRef.current?.getBoundingClientRect();
+      if (rect) {
+        const maxX = (rect.width * (modalScale - 1)) / 2;
+        const maxY = (rect.height * (modalScale - 1)) / 2;
+        newX = Math.min(Math.max(newX, -maxX), maxX);
+        newY = Math.min(Math.max(newY, -maxY), maxY);
+      }
+      setModalTranslate({ x: newX, y: newY });
+    } else if (e.touches.length === 2) {
+      e.preventDefault();
+      if (!ref.lastDist) return;
+      const dist = getDistance(e.touches[0], e.touches[1]);
+      const scaleFactor = dist / ref.lastDist;
+      const newScale = Math.min(Math.max(ref.startScale * scaleFactor, 1), 4);
+
+      const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+      const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+
+      const rect = modalContainerRef.current?.getBoundingClientRect();
+      if (!rect) return;
+
+      const originX = midX - rect.left - rect.width / 2;
+      const originY = midY - rect.top - rect.height / 2;
+      const scaleChange = newScale / ref.startScale;
+      
+      let newTx = originX - scaleChange * (originX - ref.startTx);
+      let newTy = originY - scaleChange * (originY - ref.startTy);
+
+      const maxX = (rect.width * (newScale - 1)) / 2;
+      const maxY = (rect.height * (newScale - 1)) / 2;
+      newTx = Math.min(Math.max(newTx, -maxX), maxX);
+      newTy = Math.min(Math.max(newTy, -maxY), maxY);
+
+      setModalScale(newScale);
+      setModalTranslate({ x: newTx, y: newTy });
+    }
+  };
+
+  const handleModalTouchEnd = (e) => {
+    const ref = modalTouchRef.current;
+    if (e.touches.length === 0) {
+      ref.isDragging = false;
+    } else if (e.touches.length === 1) {
+      const touch = e.touches[0];
+      ref.isDragging = true;
+      ref.startX = touch.clientX - modalTranslate.x;
+      ref.startY = touch.clientY - modalTranslate.y;
+      ref.lastDist = undefined;
+    }
+  };
+
+  const handleModalMouseDown = (e) => {
+    if (modalScale === 1) return;
+    e.preventDefault();
+    const ref = modalTouchRef.current;
+    ref.isDragging = true;
+    ref.startX = e.clientX - modalTranslate.x;
+    ref.startY = e.clientY - modalTranslate.y;
+  };
+
+  const handleModalMouseMove = (e) => {
+    const ref = modalTouchRef.current;
+    if (ref.isDragging && modalScale > 1) {
+      e.preventDefault();
+      let newX = e.clientX - ref.startX;
+      let newY = e.clientY - ref.startY;
+
+      const rect = modalContainerRef.current?.getBoundingClientRect();
+      if (rect) {
+        const maxX = (rect.width * (modalScale - 1)) / 2;
+        const maxY = (rect.height * (modalScale - 1)) / 2;
+        newX = Math.min(Math.max(newX, -maxX), maxX);
+        newY = Math.min(Math.max(newY, -maxY), maxY);
+      }
+      setModalTranslate({ x: newX, y: newY });
+    }
+  };
+
+  const handleModalMouseUpOrLeave = () => {
+    modalTouchRef.current.isDragging = false;
+  };
+
+  const handleModalWheel = (e) => {
+    e.preventDefault();
+    const zoomIntensity = 0.1;
+    const rect = modalContainerRef.current?.getBoundingClientRect();
+    if (!rect) return;
+
+    const mouseX = e.clientX - rect.left - rect.width / 2;
+    const mouseY = e.clientY - rect.top - rect.height / 2;
+
+    const delta = e.deltaY < 0 ? 1 : -1;
+    const newScale = Math.min(Math.max(modalScale + delta * zoomIntensity, 1), 4);
+
+    const scaleChange = newScale / modalScale;
+    let newTx = mouseX - scaleChange * (mouseX - modalTranslate.x);
+    let newTy = mouseY - scaleChange * (mouseY - modalTranslate.y);
+
+    const maxX = (rect.width * (newScale - 1)) / 2;
+    const maxY = (rect.height * (newScale - 1)) / 2;
+    newTx = Math.min(Math.max(newTx, -maxX), maxX);
+    newTy = Math.min(Math.max(newTy, -maxY), maxY);
+
+    setModalScale(newScale);
+    setModalTranslate({ x: newTx, y: newTy });
+  };
+
   // Real-time weather state
   const [realtimeWeather, setRealtimeWeather] = useState(null);
   const [isWeatherLoading, setIsWeatherLoading] = useState(false);
@@ -439,15 +625,66 @@ export default function GuideSection({ lang }) {
           </button>
         </div>
 
-        <div style={{ position: 'relative', width: '100%', height: '240px', backgroundColor: 'var(--bg-tint)', border: '1px solid var(--color-border)', borderRadius: '6px', overflow: 'hidden' }}>
-          <img 
-            src={hotelLevel === '1F' ? 'assets/extra/hotel_level1.jpg' : 'assets/extra/hotel_level2.jpg'} 
-            alt={`Hotel map level ${hotelLevel}`} 
-            style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+        <div
+          onClick={() => {
+            setModalScale(1);
+            setModalTranslate({ x: 0, y: 0 });
+            setIsMapModalOpen(true);
+          }}
+          style={{
+            position: 'relative',
+            width: '100%',
+            height: '360px',
+            backgroundColor: 'var(--bg-tint)',
+            border: '1px solid var(--color-border)',
+            borderRadius: '6px',
+            overflow: 'hidden',
+            cursor: 'pointer',
+            userSelect: 'none',
+          }}
+          className="group"
+        >
+          <img
+            src={hotelLevel === '1F' ? 'assets/extra/hotel_level1.jpg' : 'assets/extra/hotel_level2.jpg'}
+            alt={`Hotel map level ${hotelLevel}`}
+            draggable={false}
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'contain',
+              pointerEvents: 'none',
+              transition: 'transform 0.3s ease',
+            }}
           />
+          {/* Subtle click-to-zoom badge */}
+          <div style={{
+            position: 'absolute',
+            inset: 0,
+            backgroundColor: 'rgba(0,0,0,0.03)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            transition: 'background-color 0.2s ease',
+          }}>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              backgroundColor: 'rgba(140, 59, 36, 0.9)',
+              color: '#ffffff',
+              padding: '8px 16px',
+              borderRadius: '20px',
+              fontSize: '12.5px',
+              fontWeight: 600,
+              boxShadow: '0 4px 10px rgba(0,0,0,0.2)',
+            }}>
+              <Maximize2 size={13} />
+              {lang === 'ko' ? '지도를 눌러 확대하기' : 'Tap to Zoom / Fullscreen'}
+            </div>
+          </div>
         </div>
         <p style={{ marginTop: '8px', fontSize: '11px', color: 'var(--color-muted)', textAlign: 'center' }}>
-          {lang === 'ko' ? '※ 지도를 눌러 핀치하여 확대해 볼 수 있습니다.' : '※ Tap and pinch layout image to zoom.'}
+          {lang === 'ko' ? '※ 지도를 터치하면 전체화면 확대/축소 및 이동이 가능합니다.' : '※ Tap the map to view fullscreen and pinch to zoom.'}
         </p>
       </div>
 
@@ -897,6 +1134,215 @@ export default function GuideSection({ lang }) {
           </div>
         )}
       </div>
+
+      {/* Fullscreen Map Zoom Modal */}
+      {isMapModalOpen && (
+        <div 
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(10, 10, 10, 0.98)',
+            zIndex: 9999,
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            backdropFilter: 'blur(8px)',
+            touchAction: 'none',
+          }}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setIsMapModalOpen(false);
+            }
+          }}
+        >
+          {/* Top Bar of Modal */}
+          <div style={{
+            width: '100%',
+            padding: '16px 20px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+            zIndex: 10002,
+          }}>
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+              <button 
+                onClick={() => { setHotelLevel('1F'); handleResetZoom(); }}
+                style={{
+                  padding: '6px 12px',
+                  borderRadius: '16px',
+                  border: 'none',
+                  backgroundColor: hotelLevel === '1F' ? 'var(--color-crimson)' : 'rgba(255,255,255,0.1)',
+                  color: '#ffffff',
+                  fontSize: '12px',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                }}
+              >
+                1F
+              </button>
+              <button 
+                onClick={() => { setHotelLevel('2F'); handleResetZoom(); }}
+                style={{
+                  padding: '6px 12px',
+                  borderRadius: '16px',
+                  border: 'none',
+                  backgroundColor: hotelLevel === '2F' ? 'var(--color-crimson)' : 'rgba(255,255,255,0.1)',
+                  color: '#ffffff',
+                  fontSize: '12px',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                }}
+              >
+                2F
+              </button>
+              <span style={{ color: '#ffffff', fontSize: '13px', marginLeft: '6px', opacity: 0.8 }}>
+                {hotelLevel} {lang === 'ko' ? '안내도' : 'Map'}
+              </span>
+            </div>
+            
+            <button 
+              onClick={() => setIsMapModalOpen(false)}
+              style={{
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                border: 'none',
+                borderRadius: '50%',
+                width: '32px',
+                height: '32px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#ffffff',
+                cursor: 'pointer',
+              }}
+            >
+              <X size={18} />
+            </button>
+          </div>
+
+          {/* Map Viewer Container */}
+          <div
+            ref={modalContainerRef}
+            onTouchStart={handleModalTouchStart}
+            onTouchMove={handleModalTouchMove}
+            onTouchEnd={handleModalTouchEnd}
+            onMouseDown={handleModalMouseDown}
+            onMouseMove={handleModalMouseMove}
+            onMouseUp={handleModalMouseUpOrLeave}
+            onMouseLeave={handleModalMouseUpOrLeave}
+            onWheel={handleModalWheel}
+            style={{
+              flex: 1,
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              overflow: 'hidden',
+              cursor: modalScale > 1 ? 'grab' : 'default',
+              userSelect: 'none',
+              touchAction: 'none',
+            }}
+          >
+            <img
+              src={hotelLevel === '1F' ? 'assets/extra/hotel_level1.jpg' : 'assets/extra/hotel_level2.jpg'}
+              alt={`Hotel map level ${hotelLevel}`}
+              draggable={false}
+              style={{
+                maxWidth: '96%',
+                maxHeight: '92%',
+                objectFit: 'contain',
+                transform: `translate(${modalTranslate.x}px, ${modalTranslate.y}px) scale(${modalScale})`,
+                transformOrigin: 'center center',
+                transition: modalTouchRef.current?.lastDist ? 'none' : 'transform 0.15s ease-out',
+                willChange: 'transform',
+                pointerEvents: 'none',
+              }}
+            />
+          </div>
+
+          {/* Zoom Controls Overlay */}
+          <div style={{
+            padding: '16px 20px',
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: '10px',
+            backgroundColor: 'rgba(0, 0, 0, 0.6)',
+            borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+            zIndex: 10002,
+          }}>
+            <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+              <button 
+                onClick={handleZoomOut}
+                disabled={modalScale <= 1}
+                style={{
+                  width: '38px',
+                  height: '38px',
+                  borderRadius: '50%',
+                  border: 'none',
+                  backgroundColor: modalScale <= 1 ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.15)',
+                  color: modalScale <= 1 ? '#666' : '#ffffff',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: modalScale <= 1 ? 'default' : 'pointer',
+                }}
+              >
+                <ZoomOut size={16} />
+              </button>
+              
+              <span style={{ color: '#ffffff', minWidth: '40px', textAlign: 'center', fontSize: '13px', fontWeight: 600 }}>
+                {Math.round(modalScale * 100)}%
+              </span>
+
+              <button 
+                onClick={handleZoomIn}
+                disabled={modalScale >= 4}
+                style={{
+                  width: '38px',
+                  height: '38px',
+                  borderRadius: '50%',
+                  border: 'none',
+                  backgroundColor: modalScale >= 4 ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.15)',
+                  color: modalScale >= 4 ? '#666' : '#ffffff',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: modalScale >= 4 ? 'default' : 'pointer',
+                }}
+              >
+                <ZoomIn size={16} />
+              </button>
+              
+              {(modalScale > 1 || modalTranslate.x !== 0 || modalTranslate.y !== 0) && (
+                <button 
+                  onClick={handleResetZoom}
+                  style={{
+                    padding: '6px 12px',
+                    borderRadius: '4px',
+                    border: 'none',
+                    backgroundColor: 'rgba(255,255,255,0.2)',
+                    color: '#ffffff',
+                    fontSize: '11.5px',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    marginLeft: '8px',
+                  }}
+                >
+                  {lang === 'ko' ? '초기화' : 'Reset'}
+                </button>
+              )}
+            </div>
+            
+            <p style={{ margin: 0, fontSize: '11px', color: 'rgba(255, 255, 255, 0.5)', textAlign: 'center' }}>
+              {lang === 'ko' ? '※ 두 손가락 핀치 / 마우스 휠로 줌이 가능하며, 드래그하여 이동할 수 있습니다.' : '※ Pinch with two fingers / scroll wheel to zoom, drag to pan.'}
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
