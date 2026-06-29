@@ -250,7 +250,7 @@ export default function HomeSection({ lang }) {
             {content.vow.pledge}
           </p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'center' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', width: '100%', maxWidth: '280px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', width: '100%', maxWidth: '300px' }}>
               <span style={{ fontSize: '13px', color: 'var(--color-muted)', whiteSpace: 'nowrap' }}>
                 {lang === 'ko' ? '이름' : 'Name'}
               </span>
@@ -272,7 +272,7 @@ export default function HomeSection({ lang }) {
                   fontWeight: 500
                 }}
               />
-              <span style={{ fontSize: '13px', color: 'var(--color-muted)' }}>
+              <span style={{ fontSize: '13px', color: 'var(--color-muted)', whiteSpace: 'nowrap' }}>
                 {content.vow.sign}
               </span>
             </div>
