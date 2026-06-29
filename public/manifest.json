@@ -1,0 +1,17 @@
+{
+  "short_name": "샬롬핸드북",
+  "name": "샬롬 라틴아메리카 단기선교 핸드북",
+  "icons": [
+    {
+      "src": "/icon.png",
+      "type": "image/png",
+      "sizes": "1024x1024",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#8B2635",
+  "theme_color": "#8B2635",
+  "display": "standalone",
+  "orientation": "portrait"
+}
