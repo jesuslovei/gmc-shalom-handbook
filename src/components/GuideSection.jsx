@@ -642,7 +642,6 @@ export default function GuideSection({ lang }) {
             cursor: 'pointer',
             userSelect: 'none',
           }}
-          className="group"
         >
           <img
             src={hotelLevel === '1F' ? 'assets/extra/hotel_level1.jpg' : 'assets/extra/hotel_level2.jpg'}
@@ -653,35 +652,8 @@ export default function GuideSection({ lang }) {
               height: '100%',
               objectFit: 'contain',
               pointerEvents: 'none',
-              transition: 'transform 0.3s ease',
             }}
           />
-          {/* Subtle click-to-zoom badge */}
-          <div style={{
-            position: 'absolute',
-            inset: 0,
-            backgroundColor: 'rgba(0,0,0,0.03)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            transition: 'background-color 0.2s ease',
-          }}>
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              backgroundColor: 'rgba(140, 59, 36, 0.9)',
-              color: '#ffffff',
-              padding: '8px 16px',
-              borderRadius: '20px',
-              fontSize: '12.5px',
-              fontWeight: 600,
-              boxShadow: '0 4px 10px rgba(0,0,0,0.2)',
-            }}>
-              <Maximize2 size={13} />
-              {lang === 'ko' ? '지도를 눌러 확대하기' : 'Tap to Zoom / Fullscreen'}
-            </div>
-          </div>
         </div>
         <p style={{ marginTop: '8px', fontSize: '11px', color: 'var(--color-muted)', textAlign: 'center' }}>
           {lang === 'ko' ? '※ 지도를 터치하면 전체화면 확대/축소 및 이동이 가능합니다.' : '※ Tap the map to view fullscreen and pinch to zoom.'}
