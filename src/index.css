@@ -753,3 +753,8 @@ button, input, textarea {
     gap: 8px;
   }
 }
+
+.author-name-input::placeholder {
+  color: #1e3a8a !important;
+  opacity: 0.75 !important;
+}

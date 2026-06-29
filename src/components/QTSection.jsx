@@ -378,6 +378,7 @@ export default function QTSection({ lang, qtDays }) {
               </span>
               <input 
                 type="text" 
+                className="author-name-input"
                 value={userName} 
                 onChange={(e) => {
                   const newName = e.target.value;
