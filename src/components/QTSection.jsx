@@ -367,13 +367,14 @@ export default function QTSection({ lang, qtDays }) {
               display: 'flex', 
               alignItems: 'center', 
               gap: '10px', 
-              backgroundColor: 'var(--bg-tint)', 
+              backgroundColor: '#FFFDF0', // Very soft warm ivory/gold tint
               padding: '12px 14px', 
               borderRadius: '6px', 
               marginBottom: '20px',
-              border: '1px dashed var(--color-border)'
+              border: '1.5px solid var(--color-gold)' // Thick gold border
             }}>
-              <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-charcoal)', whiteSpace: 'nowrap' }}>
+              <span style={{ fontSize: '13.0px', fontWeight: 700, color: 'var(--color-crimson)', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center' }}>
+                <span style={{ color: 'var(--color-crimson)', marginRight: '3px' }}>*</span>
                 {lang === 'ko' ? '작성자 이름' : 'Your Name'}
               </span>
               <input 
@@ -384,14 +385,14 @@ export default function QTSection({ lang, qtDays }) {
                   setUserName(newName);
                   localStorage.setItem('shalom_vow_name', newName);
                 }} 
-                placeholder={lang === 'ko' ? '공유용 이름을 적어주세요' : 'Enter sharing name'}
+                placeholder={lang === 'ko' ? '공유하기 전 이름을 꼭 입력해 주세요' : 'Please enter name before sharing'}
                 style={{ 
                   flex: 1, 
                   border: 'none', 
-                  borderBottom: '1px solid var(--color-border)', 
+                  borderBottom: '1.5px solid var(--color-gold-dark)', 
                   backgroundColor: 'transparent', 
                   fontSize: '13.5px',
-                  fontWeight: 500,
+                  fontWeight: 600,
                   color: 'var(--color-charcoal)',
                   outline: 'none',
                   padding: '2px 4px'
