@@ -49,7 +49,7 @@ export default async function handler(req, res) {
         });
         return res.status(200).json(data);
       } else {
-        const getRes = await fetch(EXTENDSCLASS_BIN_URL);
+        const getRes = await fetch(EXTENDSCLASS_BIN_URL + "?cb=" + Date.now());
         if (!getRes.ok) return res.status(200).json([]);
         const data = await getRes.json();
         return res.status(200).json(data || []);
@@ -138,7 +138,7 @@ export default async function handler(req, res) {
         if (!response.ok) throw new Error("Supabase reflections write failed");
         return res.status(200).json({ success: true, id: generatedId });
       } else {
-        const getRes = await fetch(EXTENDSCLASS_BIN_URL);
+        const getRes = await fetch(EXTENDSCLASS_BIN_URL + "?cb=" + Date.now());
         let reflections = [];
         if (getRes.ok) {
           try {
@@ -229,7 +229,7 @@ export default async function handler(req, res) {
         if (!response.ok) throw new Error("Supabase reflections delete failed");
         return res.status(200).json({ success: true });
       } else {
-        const getRes = await fetch(EXTENDSCLASS_BIN_URL);
+        const getRes = await fetch(EXTENDSCLASS_BIN_URL + "?cb=" + Date.now());
         if (!getRes.ok) return res.status(500).json({ error: "Failed to read database" });
         const reflections = await getRes.json();
         const updatedReflections = (reflections || []).filter(p => p && p.id !== postId);

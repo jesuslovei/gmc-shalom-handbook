@@ -39,7 +39,7 @@ export default async function handler(req, res) {
         }));
         return res.status(200).json(data);
       } else {
-        const getRes = await fetch(EXTENDSCLASS_BIN_URL);
+        const getRes = await fetch(EXTENDSCLASS_BIN_URL + "?cb=" + Date.now());
         if (!getRes.ok) return res.status(200).json([]);
         const data = await getRes.json();
         return res.status(200).json(data || []);
@@ -91,7 +91,7 @@ export default async function handler(req, res) {
         if (!response.ok) throw new Error("Supabase signature write failed");
         return res.status(200).json({ success: true });
       } else {
-        const getRes = await fetch(EXTENDSCLASS_BIN_URL);
+        const getRes = await fetch(EXTENDSCLASS_BIN_URL + "?cb=" + Date.now());
         let signatures = [];
         if (getRes.ok) {
           try {
