@@ -7,6 +7,7 @@ export default function GuideSection({ lang }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [openCategory, setOpenCategory] = useState('greetings');
   const [hotelLevel, setHotelLevel] = useState('1F');
+  const [activeLawTab, setActiveLawTab] = useState(0);
   
   // Real-time weather state
   const [realtimeWeather, setRealtimeWeather] = useState(null);
@@ -448,6 +449,247 @@ export default function GuideSection({ lang }) {
         <p style={{ marginTop: '8px', fontSize: '11px', color: 'var(--color-muted)', textAlign: 'center' }}>
           {lang === 'ko' ? '※ 지도를 눌러 핀치하여 확대해 볼 수 있습니다.' : '※ Tap and pinch layout image to zoom.'}
         </p>
+      </div>
+
+      {/* 4. Four Spiritual Laws Card (복음 전도 - 4영리) */}
+      <div className="card">
+        <div className="card-header-line">
+          <h2 className="card-title">
+            {lang === 'ko' ? "복음 전도 (4영리)" : "The Four Spiritual Laws"}
+          </h2>
+          <span className="card-subtitle">Las Cuatro Leyes Espirituales</span>
+        </div>
+
+        <p style={{ fontSize: '12.5px', color: 'var(--color-muted)', marginBottom: '16px', lineHeight: '1.4' }}>
+          {lang === 'ko' ? "※ 스피커 아이콘을 누르면 문장의 현지 발음(음성)을 들을 수 있습니다." : "※ Tap the speaker icon to listen to the audio pronunciation."}
+        </p>
+
+        {/* Tab buttons */}
+        <div style={{ 
+          display: 'flex', 
+          overflowX: 'auto', 
+          gap: '6px', 
+          marginBottom: '16px',
+          paddingBottom: '6px',
+          WebkitOverflowScrolling: 'touch'
+        }}>
+          {['제1원리', '제2원리', '제3원리', '제4원리', '영접기도'].map((tabLabel, idx) => {
+            const isActive = activeLawTab === idx;
+            const labelsEn = ['Law 1', 'Law 2', 'Law 3', 'Law 4', 'Prayer'];
+            return (
+              <button
+                key={idx}
+                onClick={() => setActiveLawTab(idx)}
+                style={{
+                  flexShrink: 0,
+                  padding: '6px 12px',
+                  borderRadius: '16px',
+                  border: isActive ? '1px solid var(--color-crimson)' : '1px solid var(--color-border)',
+                  backgroundColor: isActive ? 'var(--color-crimson)' : 'transparent',
+                  color: isActive ? '#ffffff' : 'var(--color-charcoal)',
+                  fontSize: '12px',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  transition: 'var(--transition)'
+                }}
+              >
+                {lang === 'ko' ? tabLabel : labelsEn[idx]}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Tab Content */}
+        <div style={{ backgroundColor: 'var(--bg-tint)', borderRadius: '6px', padding: '16px', fontSize: '13px', border: '1px solid var(--color-divider)' }}>
+          {activeLawTab === 0 && (
+            <div>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginBottom: '8px' }}>
+                <button 
+                  onClick={() => speakSpanish("Dios le ama, y tiene un plan maravilloso para su vida.")}
+                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '26px', height: '26px', borderRadius: '50%', border: 'none', backgroundColor: '#ffffff', color: 'var(--color-crimson)', cursor: 'pointer', flexShrink: 0, marginTop: '2px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}
+                >
+                  <Volume2 size={14} />
+                </button>
+                <span style={{ fontSize: '15px', fontWeight: 700, color: 'var(--color-crimson)', lineHeight: '1.4' }}>
+                  Dios le ama, y tiene un plan maravilloso para su vida.
+                </span>
+              </div>
+              <p style={{ fontSize: '11.5px', color: 'var(--color-muted)', fontStyle: 'italic', margin: '0 0 12px 34px' }}>
+                [디오스 레 아마, 이 티에네 운 쁠란 마라비요소 뽀라 수 비다]
+              </p>
+              <h4 style={{ margin: '0 0 8px', fontWeight: 700, color: 'var(--color-charcoal)', lineHeight: '1.5' }}>
+                {lang === 'ko' ? "하나님은 당신을 사랑하시며, 당신을 위한 놀라운 계획을 가지고 계십니다." : "God loves you and offers a wonderful plan for your life."}
+              </h4>
+              
+              <div style={{ borderLeft: '3px solid var(--color-gold)', paddingLeft: '10px', marginTop: '14px', fontSize: '12.5px', color: 'var(--color-charcoal)', lineHeight: '1.5' }}>
+                <strong>Juan 3:16</strong><br />
+                {lang === 'ko' ? (
+                  <>
+                    "Porque de tal manera amó Dios al mundo, que ha dado a su Hijo unigénito, para que todo aquel que en él cree, no se pierda, mas tenga vida eterna."<br />
+                    <span style={{ color: 'var(--color-muted)', fontSize: '12px' }}>(하나님이 세상을 이처럼 사랑하사 독생자를 주셨으니 이는 그를 믿는 자마다 멸망하지 않고 영생을 얻게 하려 하심이라.)</span>
+                  </>
+                ) : (
+                  <>
+                    "For God so loved the world that He gave His one and only Son, that whoever believes in Him shall not perish but have eternal life."
+                  </>
+                )}
+              </div>
+            </div>
+          )}
+
+          {activeLawTab === 1 && (
+            <div>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginBottom: '8px' }}>
+                <button 
+                  onClick={() => speakSpanish("El hombre es pecador y está separado de Dios; por lo tanto, no puede conocer ni experimentar el amor y el plan de Dios para su vida.")}
+                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '26px', height: '26px', borderRadius: '50%', border: 'none', backgroundColor: '#ffffff', color: 'var(--color-crimson)', cursor: 'pointer', marginTop: '2px', flexShrink: 0, boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}
+                >
+                  <Volume2 size={14} />
+                </button>
+                <span style={{ fontSize: '14.5px', fontWeight: 700, color: 'var(--color-crimson)', lineHeight: '1.4' }}>
+                  El hombre es pecador y está separado de Dios; por lo tanto, no puede conocer ni experimentar el amor y el plan de Dios para su vida.
+                </span>
+              </div>
+              <p style={{ fontSize: '11.5px', color: 'var(--color-muted)', fontStyle: 'italic', margin: '0 0 12px 34px' }}>
+                [엘 옴브레 에스 뻬까도르 이 에스따 세빠라도 데 디오스; 뽀르 로 딴또, 노 뿌에데 꼬노세르 니 에스뻬리멘따르 엘 아마르 이 엘 쁠란 데 디오스 뽀라 수 비다]
+              </p>
+              <h4 style={{ margin: '0 0 8px', fontWeight: 700, color: 'var(--color-charcoal)', lineHeight: '1.5' }}>
+                {lang === 'ko' ? "사람은 죄에 빠져 하나님으로부터 분리되어 있습니다. 그러므로 하나님의 사랑과 계획을 알 수 없고 또 그것을 체험할 수 없습니다." : "Man is sinful and separated from God. Therefore, he cannot know and experience God's love and plan for his life."}
+              </h4>
+              
+              <div style={{ borderLeft: '3px solid var(--color-gold)', paddingLeft: '10px', marginTop: '14px', fontSize: '12.5px', color: 'var(--color-charcoal)', lineHeight: '1.5' }}>
+                <strong>Romanos 3:23 & 6:23</strong><br />
+                {lang === 'ko' ? (
+                  <>
+                    "Por cuanto todos pecaron, y están destituidos de la gloria de Dios... Porque la paga del pecado es muerte..."<br />
+                    <span style={{ color: 'var(--color-muted)', fontSize: '12px' }}>(모든 사람이 죄를 범하였으매 하나님의 영광에 이르지 못하더니... 죄의 삯은 사망이요...)</span>
+                  </>
+                ) : (
+                  <>
+                    "For all have sinned and fall short of the glory of God... For the wages of sin is death..."
+                  </>
+                )}
+              </div>
+            </div>
+          )}
+
+          {activeLawTab === 2 && (
+            <div>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginBottom: '8px' }}>
+                <button 
+                  onClick={() => speakSpanish("Jesucristo es la única provisión de Dios para el pecador. Solo a través de Él puede usted conocer y experimentar el amor y el plan de Dios para su vida.")}
+                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '26px', height: '26px', borderRadius: '50%', border: 'none', backgroundColor: '#ffffff', color: 'var(--color-crimson)', cursor: 'pointer', marginTop: '2px', flexShrink: 0, boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}
+                >
+                  <Volume2 size={14} />
+                </button>
+                <span style={{ fontSize: '14.5px', fontWeight: 700, color: 'var(--color-crimson)', lineHeight: '1.4' }}>
+                  Jesucristo es la única provisión de Dios para el pecador. Solo a través de Él puede usted conocer y experimentar el amor y el plan de Dios para su vida.
+                </span>
+              </div>
+              <p style={{ fontSize: '11.5px', color: 'var(--color-muted)', fontStyle: 'italic', margin: '0 0 12px 34px' }}>
+                [헤수끄리스또 에스 라 우니까 쁘로비시온 데 디오스 뽀라 엘 뻬까도르. 솔로 아 뜨라베스 데 엘 뿌에데 우스뗃 꼬노세르 니 에스뻬리멘따르 엘 아마르 이 엘 쁠란 데 디오스 뽀라 수 비다]
+              </p>
+              <h4 style={{ margin: '0 0 8px', fontWeight: 700, color: 'var(--color-charcoal)', lineHeight: '1.5' }}>
+                {lang === 'ko' ? "예수 그리스도는 사람의 죄를 해결하기 위한 하나님의 유일한 길입니다. 그를 통해 당신은 하나님의 사랑과 계획을 알고 체험하게 됩니다." : "Jesus Christ is God's only provision for man's sin. Through Him you can know and experience God's love and plan for your life."}
+              </h4>
+              
+              <div style={{ borderLeft: '3px solid var(--color-gold)', paddingLeft: '10px', marginTop: '14px', fontSize: '12.5px', color: 'var(--color-charcoal)', lineHeight: '1.5' }}>
+                <strong>Juan 14:6</strong><br />
+                {lang === 'ko' ? (
+                  <>
+                    "Jesús le dijo: Yo soy el camino, y la verdad, y la vida; nadie viene al Padre, sino por mí."<br />
+                    <span style={{ color: 'var(--color-muted)', fontSize: '12px' }}>(예수께서 이르시되 내가 곧 길이요 진리요 생명이니 나로 말미암지 않고는 아버지께로 올 자가 없느니라.)</span>
+                  </>
+                ) : (
+                  <>
+                    "Jesus answered, 'I am the way and the truth and the life. No one comes to the Father except through me.'"
+                  </>
+                )}
+              </div>
+            </div>
+          )}
+
+          {activeLawTab === 3 && (
+            <div>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginBottom: '8px' }}>
+                <button 
+                  onClick={() => speakSpanish("Debemos recibir individualmente a Jesucristo como Señor y Salvador para poder conocer y experimentar el amor y el plan de Dios para nuestras vidas.")}
+                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '26px', height: '26px', borderRadius: '50%', border: 'none', backgroundColor: '#ffffff', color: 'var(--color-crimson)', cursor: 'pointer', marginTop: '2px', flexShrink: 0, boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}
+                >
+                  <Volume2 size={14} />
+                </button>
+                <span style={{ fontSize: '14.5px', fontWeight: 700, color: 'var(--color-crimson)', lineHeight: '1.4' }}>
+                  Debemos recibir individualmente a Jesucristo como Señor y Salvador para poder conocer y experimentar el amor y el plan de Dios para nuestras vidas.
+                </span>
+              </div>
+              <p style={{ fontSize: '11.5px', color: 'var(--color-muted)', fontStyle: 'italic', margin: '0 0 12px 34px' }}>
+                [데베모스 레시비르 인디비두알멘떼 아 헤수끄리스또 꼬모 세뇨르 이 살바도르 뽀라 뿌데르 꼬노세르 니 에스뻬리멘따르 엘 아마르 이 엘 쁠란 데 디오스 뽀라 누에스뜨라스 비다스]
+              </p>
+              <h4 style={{ margin: '0 0 8px', fontWeight: 700, color: 'var(--color-charcoal)', lineHeight: '1.5' }}>
+                {lang === 'ko' ? "우리는 예수 그리스도를 나의 구원자, 나의 주님으로 영접해야 합니다. 그러면 우리는 하나님의 사랑과 계획을 알게 되고 체험하게 됩니다." : "We must individually receive Jesus Christ as Savior and Lord; then we can know and experience God's love and plan for our lives."}
+              </h4>
+              
+              <div style={{ borderLeft: '3px solid var(--color-gold)', paddingLeft: '10px', marginTop: '14px', fontSize: '12.5px', color: 'var(--color-charcoal)', lineHeight: '1.5' }}>
+                <strong>Apocalipsis 3:20</strong><br />
+                {lang === 'ko' ? (
+                  <>
+                    "He aquí, yo estoy a la puerta y llamo; si alguno oye mi voz y abre la puerta, entraré a él..."<br />
+                    <span style={{ color: 'var(--color-muted)', fontSize: '12px' }}>(볼지어다 내가 문 밖에 서서 두드리노니 누구든지 내 음성을 듣고 문을 열면 내가 그에게로 들어가 그와 더불어 먹으리라.)</span>
+                  </>
+                ) : (
+                  <>
+                    "Here I am! I stand at the door and knock. If anyone hears my voice and opens the door, I will come in and eat with him, and he with me."
+                  </>
+                )}
+              </div>
+            </div>
+          )}
+
+          {activeLawTab === 4 && (
+            <div>
+              <h4 style={{ margin: '0 0 10px', fontWeight: 700, color: 'var(--color-charcoal)', borderBottom: '1px solid var(--color-divider)', paddingBottom: '4px' }}>
+                {lang === 'ko' ? "영접 기도문 (Oración de Entrega)" : "The Sinner's Prayer"}
+              </h4>
+              <p style={{ fontSize: '12px', color: 'var(--color-charcoal)', lineHeight: '1.5', marginBottom: '14px' }}>
+                {lang === 'ko' ? "아래 기도문을 대원과 복음 받는 현지인이 한 문장씩 차례대로 소리내어 따라 기도하도록 돕습니다." : "Help the person pray sentence by sentence following these lines."}
+              </p>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                {[
+                  { es: "Señor Jesús, te necesito.", pron: "세뇨르 헤수스, 떼 네세시또.", ko: "주 예수님, 나는 주님이 필요합니다.", en: "Lord Jesus, I need You." },
+                  { es: "Te agradezco por morir en la cruz por mis pecados.", pron: "떼 아그라데스꼬 뽀르 모리르 엔 라 끄루스 뽀르 미스 뻬까도스.", ko: "내 죄를 위해 십자가에서 죽으신 것을 감사드립니다.", en: "Thank You for dying on the cross for my sins." },
+                  { es: "Abro la puerta de mi vida y te recibo como mi Salvador y Señor.", pron: "아브로 라 부에르따 데 미 비다 이 떼 레시보 꼬모 미 살바도르 이 세뇨르.", ko: "지금 내 마음의 문을 열고 예수님을 나의 구원자, 나의 주님으로 영접합니다.", en: "I open the door of my life and receive You as my Savior and Lord." },
+                  { es: "Toma el control de mi vida.", pron: "또마 엘 꼰뜨롤 데 미 비다.", ko: "내 삶을 인도해 주소서.", en: "Take control of my life." },
+                  { es: "Hazme la persona que Tú quieres que yo sea.", pron: "아스메 라 뻬르소나 께 뚜 께레스 께 요 세아.", ko: "나를 주님이 원하시는 사람으로 만들어 주소서.", en: "Make me the kind of person You want me to be." },
+                  { es: "En el nombre de Jesús. Amén.", pron: "엔 엘 놈브레 데 헤수스. 아멘.", ko: "예수님의 이름으로 기도합니다. 아멘.", en: "In the name of Jesus. Amen." }
+                ].map((sentence, sIdx) => (
+                  <div key={sIdx} style={{ 
+                    paddingBottom: sIdx < 5 ? '10px' : '0', 
+                    borderBottom: sIdx < 5 ? '1px dashed var(--color-divider)' : 'none'
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <button 
+                        onClick={() => speakSpanish(sentence.es)}
+                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '24px', height: '24px', borderRadius: '50%', border: 'none', backgroundColor: '#ffffff', color: 'var(--color-crimson)', cursor: 'pointer', flexShrink: 0, boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}
+                      >
+                        <Volume2 size={13} />
+                      </button>
+                      <span style={{ fontSize: '13.5px', fontWeight: 700, color: 'var(--color-crimson)' }}>
+                        {sentence.es}
+                      </span>
+                    </div>
+                    <div style={{ fontSize: '11px', color: 'var(--color-muted)', fontStyle: 'italic', marginLeft: '32px', marginTop: '2px' }}>
+                      [{sentence.pron}]
+                    </div>
+                    <div style={{ fontSize: '12px', color: 'var(--color-charcoal)', marginLeft: '32px', marginTop: '4px', fontWeight: 500 }}>
+                      {lang === 'ko' ? sentence.ko : sentence.en}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* 5. Spanish Phrasebook Card (Interactive Search & Accordions) */}
