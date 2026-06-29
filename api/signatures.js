@@ -30,7 +30,10 @@ export default async function handler(req, res) {
             'Authorization': `Bearer ${supabaseKey}`
           }
         });
-        if (!response.ok) throw new Error("Supabase signature fetch failed");
+        if (!response.ok) {
+          const errText = await response.text();
+          throw new Error(`Supabase signature fetch failed: ${response.status} ${errText}`);
+        }
         const rows = await response.json();
         const data = rows.map(row => ({
           id: row.sig_id,
@@ -46,7 +49,7 @@ export default async function handler(req, res) {
       }
     } catch (err) {
       console.error("Fetch signatures error:", err);
-      return res.status(500).json({ error: "Failed to fetch signatures" });
+      return res.status(500).json({ error: err.message || "Failed to fetch signatures" });
     }
   }
 
@@ -88,7 +91,10 @@ export default async function handler(req, res) {
             created_at: new Date().toISOString()
           })
         });
-        if (!response.ok) throw new Error("Supabase signature write failed");
+        if (!response.ok) {
+          const errText = await response.text();
+          throw new Error(`Supabase signature write failed: ${response.status} ${errText}`);
+        }
         return res.status(200).json({ success: true });
       } else {
         const getRes = await fetch(EXTENDSCLASS_BIN_URL + "?cb=" + Date.now());
@@ -125,7 +131,7 @@ export default async function handler(req, res) {
       }
     } catch (err) {
       console.error("Save signature error:", err);
-      return res.status(500).json({ error: "Failed to save signature" });
+      return res.status(500).json({ error: err.message || "Failed to save signature" });
     }
   }
 

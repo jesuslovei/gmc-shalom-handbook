@@ -30,7 +30,10 @@ export default async function handler(req, res) {
             'Authorization': `Bearer ${supabaseKey}`
           }
         });
-        if (!response.ok) throw new Error("Supabase reflections fetch failed");
+        if (!response.ok) {
+          const errText = await response.text();
+          throw new Error(`Supabase reflections fetch failed: ${response.status} ${errText}`);
+        }
         const rows = await response.json();
         const data = rows.map(row => {
           let content = { q_notes: {}, e_notes: {} };
@@ -56,7 +59,7 @@ export default async function handler(req, res) {
       }
     } catch (err) {
       console.error("Fetch reflections error:", err);
-      return res.status(500).json({ error: "Failed to fetch reflections" });
+      return res.status(500).json({ error: err.message || "Failed to fetch reflections" });
     }
   }
 
@@ -111,7 +114,10 @@ export default async function handler(req, res) {
                   created_at: new Date().toISOString()
                 })
               });
-              if (!patchRes.ok) throw new Error("Supabase reflections patch failed");
+              if (!patchRes.ok) {
+                const errText = await patchRes.text();
+                throw new Error(`Supabase reflections patch failed: ${patchRes.status} ${errText}`);
+              }
               return res.status(200).json({ success: true, id: body.id });
             }
           }
@@ -135,7 +141,10 @@ export default async function handler(req, res) {
             created_at: new Date().toISOString()
           })
         });
-        if (!response.ok) throw new Error("Supabase reflections write failed");
+        if (!response.ok) {
+          const errText = await response.text();
+          throw new Error(`Supabase reflections write failed: ${response.status} ${errText}`);
+        }
         return res.status(200).json({ success: true, id: generatedId });
       } else {
         const getRes = await fetch(EXTENDSCLASS_BIN_URL + "?cb=" + Date.now());
@@ -207,7 +216,7 @@ export default async function handler(req, res) {
       }
     } catch (err) {
       console.error("Save reflection error:", err);
-      return res.status(500).json({ error: "Failed to save reflection" });
+      return res.status(500).json({ error: err.message || "Failed to save reflection" });
     }
   }
 
@@ -226,7 +235,10 @@ export default async function handler(req, res) {
             'Authorization': `Bearer ${supabaseKey}`
           }
         });
-        if (!response.ok) throw new Error("Supabase reflections delete failed");
+        if (!response.ok) {
+          const errText = await response.text();
+          throw new Error(`Supabase reflections delete failed: ${response.status} ${errText}`);
+        }
         return res.status(200).json({ success: true });
       } else {
         const getRes = await fetch(EXTENDSCLASS_BIN_URL + "?cb=" + Date.now());
@@ -245,7 +257,7 @@ export default async function handler(req, res) {
       }
     } catch (err) {
       console.error("Delete reflection error:", err);
-      return res.status(500).json({ error: "Failed to delete reflection" });
+      return res.status(500).json({ error: err.message || "Failed to delete reflection" });
     }
   }
 
