@@ -270,13 +270,13 @@ export const handbookContent = {
       intro: "과테말라시티는 해발 약 1,500m의 고지대로 ‘영원한 봄’이라 불리는 선선한 기후입니다. 6~10월은 우기로, 오전에는 대체로 맑고 오후~저녁에 소나기나 뇌우가 내리는 패턴입니다. 사역·탐방은 오전에 집중하고, 오후 비에 대비해 우산과 가벼운 겉옷을 준비하세요.",
       headers: ["날짜", "날씨", "기온 (최저/최고)"],
       days: [
-        { date: "6/30 화", status: "⛅ 오전 맑음, 오후 소나기", temp: "18° / 25°" },
-        { date: "7/1 수", status: "⛈️ 오전 맑음, 오후 뇌우", temp: "17° / 24°" },
-        { date: "7/2 목", status: "🌧️ 대체로 흐림, 오후 소나기", temp: "17° / 24°" },
-        { date: "7/3 금", status: "⛈️ 오전 맑음, 오후 뇌우", temp: "17° / 25°" },
-        { date: "7/4 토", status: "🌦️ 구름 많음, 오후 소나기", temp: "16° / 24°" },
-        { date: "7/5 주일", status: "🌦️ 오전 맑음, 오후 비", temp: "17° / 24°" },
-        { date: "7/6 월", status: "🌧️ 흐림, 약한 비", temp: "16° / 23°" }
+        { date: "6/30 화", status: "⛅ 오전 맑음, 오후 소나기", temp: "18° / 25°C (64° / 77°F)" },
+        { date: "7/1 수", status: "⛈️ 오전 맑음, 오후 뇌우", temp: "17° / 24°C (63° / 75°F)" },
+        { date: "7/2 목", status: "🌧️ 대체로 흐림, 오후 소나기", temp: "17° / 24°C (63° / 75°F)" },
+        { date: "7/3 금", status: "⛈️ 오전 맑음, 오후 뇌우", temp: "17° / 25°C (63° / 77°F)" },
+        { date: "7/4 토", status: "🌦️ 구름 많음, 오후 소나기", temp: "16° / 24°C (61° / 75°F)" },
+        { date: "7/5 주일", status: "🌦️ 오전 맑음, 오후 비", temp: "17° / 24°C (63° / 75°F)" },
+        { date: "7/6 월", status: "🌧️ 흐림, 약한 비", temp: "16° / 23°C (61° / 73°F)" }
       ],
       tipTitle: "우기 대비 팁",
       tipDesc: "일교차가 크니 아침·저녁용 가벼운 겉옷을 챙기고, 접이식 우산이나 우비를 늘 휴대하세요. 자외선이 강하므로 선크림·모자·선글라스도 필수입니다."
@@ -585,13 +585,13 @@ export const handbookContent = {
       intro: "Guatemala City sits at 1,500m above sea level and has a cool 'eternal spring' climate. June-October is the rainy season, characterized by clear mornings followed by afternoon/evening showers or thunderstorms. Plan main activities in the morning, and always carry an umbrella and light jacket.",
       headers: ["Date", "Forecast", "Temp (Min/Max)"],
       days: [
-        { date: "6/30 Tue", status: "⛅ Clear morning, afternoon showers", temp: "18° / 25°" },
-        { date: "7/1 Wed", status: "⛈️ Clear morning, afternoon thunderstorm", temp: "17° / 24°" },
-        { date: "7/2 Thu", status: "🌧️ Mostly cloudy, afternoon showers", temp: "17° / 24°" },
-        { date: "7/3 Fri", status: "⛈️ Clear morning, afternoon thunderstorm", temp: "17° / 25°" },
-        { date: "7/4 Sat", status: "🌦️ Partly cloudy, afternoon showers", temp: "16° / 24°" },
-        { date: "7/5 Sun", status: "🌦️ Clear morning, afternoon rain", temp: "17° / 24°" },
-        { date: "7/6 Mon", status: "🌧️ Cloudy, light rain", temp: "16° / 23°" }
+        { date: "6/30 Tue", status: "⛅ Clear morning, afternoon showers", temp: "18° / 25°C (64° / 77°F)" },
+        { date: "7/1 Wed", status: "⛈️ Clear morning, afternoon thunderstorm", temp: "17° / 24°C (63° / 75°F)" },
+        { date: "7/2 Thu", status: "🌧️ Mostly cloudy, afternoon showers", temp: "17° / 24°C (63° / 75°F)" },
+        { date: "7/3 Fri", status: "⛈️ Clear morning, afternoon thunderstorm", temp: "17° / 25°C (63° / 77°F)" },
+        { date: "7/4 Sat", status: "🌦️ Partly cloudy, afternoon showers", temp: "16° / 24°C (61° / 75°F)" },
+        { date: "7/5 Sun", status: "🌦️ Clear morning, afternoon rain", temp: "17° / 24°C (63° / 75°F)" },
+        { date: "7/6 Mon", status: "🌧️ Cloudy, light rain", temp: "16° / 23°C (61° / 73°F)" }
       ],
       tipTitle: "Rainy Season Tips",
       tipDesc: "Expect high temperature ranges. Keep a light jacket for mornings/evenings and carry a compact umbrella or raincoat. Sunscreen, hats, and sunglasses are highly recommended."

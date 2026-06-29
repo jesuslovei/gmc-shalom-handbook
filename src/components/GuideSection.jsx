@@ -70,10 +70,13 @@ export default function GuideSection({ lang }) {
           emoji = '☁️';
         }
         
+        const tempMinF = Math.round(tempMin * 1.8 + 32);
+        const tempMaxF = Math.round(tempMax * 1.8 + 32);
+        
         return {
           date: `${month}/${dateVal} (${dayName})`,
           status: `${emoji} ${status}`,
-          temp: `${tempMin}° / ${tempMax}°`
+          temp: `${tempMin}° / ${tempMax}°C (${tempMinF}° / ${tempMaxF}°F)`
         };
       });
       
